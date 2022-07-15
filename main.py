@@ -2,9 +2,6 @@
 import time
 from pynput import keyboard
 
-
-
-
 pressed_codes = []
 
 ITmorsecode_latin = {"A": "* -" ,"B": "- * * *","C": "- * - *" ,"D": "- * *" ,
