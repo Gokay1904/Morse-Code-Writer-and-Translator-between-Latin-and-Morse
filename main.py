@@ -1,12 +1,7 @@
 import numpy as np
-
 import time
 from pynput import keyboard
 
-
-
-
-pressed_codes = []
 
 ITmorsecode_latin = {"A": "* -" ,"B": "- * * *","C": "- * - *" ,"D": "- * *" ,
 "E": "*" ,"F": "* * - *","G": "- - *" ,"H": "* * * *" ,
@@ -53,6 +48,7 @@ print("_________________________________________________________________________
 print(infoText)
 
 
+pressed_codes = []
 unpress_time = 0
 pressed = False
 unpress = False
@@ -61,30 +57,13 @@ code = ""
 release_time = time.time()
 release_interval = 0
 
-
-
-
-
-
-   # try:
-   #     print('alphanumeric key {0} pressed'.format(key.char))
-
-
-   # except AttributeError:
-   #     print('special key {0} pressed'.format(key))
-
-
-
-pressed_codes = []
 testcodes = ["* - -  -- *", " ** * * *"]
-
-
 testcodes = [" ","        ", " *- *  *" ,"   ", "    -        * * *"]
 
 def morse_decoder(codes):
     #REARANGING
     rearranged_code = []
-
+    
     # check empty
     for code in codes:
 
@@ -96,15 +75,10 @@ def morse_decoder(codes):
                     codes.pop(codes.index(code))
              else:
                  break
-
-
-
-
+                
     for code in codes:
         checking = True
-
-
-
+        
         #after clearing list from empty objects find regular codes
         while checking == True:
             x = len(code)
@@ -119,33 +93,27 @@ def morse_decoder(codes):
                         break
 
                 elif i != 0:
-
                     if i == (x - 1):
                         if code[i] == " ":
                             code = code[0:i]
                             break
-
                     if code[i] == " ":
                         j = 0
                         if code[i+1] == " ":
                              j+=1
                              while True:
-
                                  if code[i+j] == " ":
                                      if (i + j) != (x-1):
                                          j += 1
-
                                  if (i + j) == (x-1):
                                     if code[i + j] == " ":
                                         code = code[0: i:] + code[(i + j)::]
                                         print(code)
-
                                     elif code[i+j] != " ":
                                         code = code[0: i:] + code[(i + j - 1)::]
                                         print(code)
                                         checking = False
                                     break
-
                                  elif code[i+j] != " ":
                                      code = code[0: i:] + code[(i+j-1): :]
                                      print(code)
@@ -153,18 +121,14 @@ def morse_decoder(codes):
                              break
                         elif code[i] != " ":
                             i+=1
-
         rearranged_code.append(code)
-
-
     return rearranged_code
-
+  
 print(morse_decoder(testcodes))
 
 def convert_morse_to_letter(rearranged_codes):
     print("__________________________________________________________________________________________________")
     letters= []
-
     # seperate keys and values of morse letter
     values = [ITmorsecode_latin[i] for i in ITmorsecode_latin]
     keys = [i for i in ITmorsecode_latin.keys()]
@@ -174,9 +138,7 @@ def convert_morse_to_letter(rearranged_codes):
             if code == value:
                 letters.append(keys[values.index(value)])
 
-
     return letters
-
 
 def on_press(key):
     global pressed
@@ -247,13 +209,11 @@ def on_release(key):
                 pressed_code = " "
                 code += pressed_code
                 print(code)
-
-
-
+                
     if key == keyboard.Key.esc:
         # Stop listener
         return False
-
+      
 # Collect events until released
 with keyboard.Listener(
         on_press=on_press,
