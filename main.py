@@ -1,5 +1,10 @@
+import numpy as np
+
 import time
 from pynput import keyboard
+
+
+
 
 pressed_codes = []
 
@@ -48,14 +53,17 @@ print("_________________________________________________________________________
 print(infoText)
 
 
-def on_press(key):
-    global pressed
-    if key == keyboard.Key.space and pressed == False:
-        print('{0} pressed'.format(key))
-        global start_time
-        global interval
-        start_time = time.time()
-        pressed = True
+unpress_time = 0
+pressed = False
+unpress = False
+code = ""
+
+release_time = time.time()
+release_interval = 0
+
+
+
+
 
 
    # try:
@@ -66,14 +74,38 @@ def on_press(key):
    #     print('special key {0} pressed'.format(key))
 
 
-testcodes = ["* -" , "- * * *"]
+
+pressed_codes = []
+testcodes = ["* - -  -- *", " ** * * *"]
+
+
+testcodes = [" ","        ", " *- *  *" ,"   ", "    -        * * *"]
+
 def morse_decoder(codes):
     #REARANGING
     rearranged_code = []
 
+    # check empty
+    for code in codes:
+
+        x = len(code)
+
+        for i in range(x):
+             if code[i] == " ":
+                 if i == x-1:
+                    codes.pop(codes.index(code))
+             else:
+                 break
+
+
+
+
     for code in codes:
         checking = True
 
+
+
+        #after clearing list from empty objects find regular codes
         while checking == True:
             x = len(code)
 
@@ -127,6 +159,7 @@ def morse_decoder(codes):
 
     return rearranged_code
 
+print(morse_decoder(testcodes))
 
 def convert_morse_to_letter(rearranged_codes):
     print("__________________________________________________________________________________________________")
@@ -145,43 +178,77 @@ def convert_morse_to_letter(rearranged_codes):
     return letters
 
 
-code = ""
+def on_press(key):
+    global pressed
+    global code
+    global unpress
+    global start_time
+    global interval
+    global release_time
+    global pressed_codes
+
+    if pressed == False:
+
+        if key == keyboard.Key.space:
+            pressed = True
+            interval = 0
+            start_time = time.time()
+            release_interval = time.time() - release_time
+           #print("Release time: ", release_interval)
+            print("release interval",release_interval)
+            print('{0} pressed'.format(key))
+
+        if 0.5 <= release_interval <= 1.5:
+            code += " "
+
+        if release_interval >= 2.5:
+            "NEW CODE"
+            pressed_codes.append(code)
+            code = ""
+            print(pressed_codes)
+            print("after clearified" ,convert_morse_to_letter(morse_decoder(pressed_codes)))
+
+
+
+#print(morse_decoder(testcodes))
 
 def on_release(key):
     #print('{0} released'.format(key))
     if key == keyboard.Key.space:
         global start_time
+        global release_time
         global pressed
         global pressed_codes
         global interval
         global code
 
-        print('{0} released'.format(key))
-        pressed = False
+        if pressed == True:
+            #print('{0} released'.format(key))
+            pressed = False
 
-        interval = time.time() - start_time
-        #print(f"Seconds since epoch = {interval}")
+            release_time = time.time()
 
-        if (4 > interval > 2):
-            pressed_code = "-"
-            code += pressed_code
-            print(code)
+            interval = time.time() - start_time
+            print("interval", interval)
 
-        elif (2 > interval > 1):
-            pressed_code = "*"
-            code += pressed_code
-            print(code)
+            #print(f"Seconds since epoch = {interval}")
 
-        elif (interval < 1):
-            pressed_code = " "
-            code += pressed_code
-            print(code)
+            if (4 > interval > 2):
+                pressed_code = "-"
+                code += pressed_code
+                print(code)
 
-        elif (interval >= 5):
-            pressed_codes.append(code)
-            code = ""
-            print(pressed_codes)
-            print(convert_morse_to_letter(morse_decoder(pressed_codes)))
+            elif (2 > interval > 1):
+                pressed_code = "*"
+                code += pressed_code
+                print(code)
+
+            elif (interval < 1):
+                pressed_code = " "
+                code += pressed_code
+                print(code)
+
+
 
     if key == keyboard.Key.esc:
         # Stop listener
@@ -199,3 +266,5 @@ listener = keyboard.Listener(
     on_release=on_release)
 
 listener.start()
+
+
